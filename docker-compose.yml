@@ -1,0 +1,70 @@
+version: '3.7'
+
+services:
+  mongo1:
+    hostname: mongo1
+    image: bitnami/mongodb:latest
+    container_name: mongo1
+    entrypoint: [ "mongod", "--bind_ip_all", "--replSet", "rs0" ]
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: MongoDB2024!
+    expose:
+      - 27017
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    healthcheck:
+      test: echo "try { rs.status() } catch (err) { rs.initiate({_id:'rs0',members:[{_id:0,host:'host.docker.internal:27017'}]}) }" | mongosh --port 27017 --quiet
+      interval: 5s
+      timeout: 30s
+      start_period: 0s
+      start_interval: 1s
+      retries: 30
+    logging:
+      options:
+        max-size: 1g
+    networks:
+      - mongo-compose-network
+      - mongo-net
+    ports:
+      - '27017:27017'
+    restart: always
+    volumes:
+      - 'polls_mongodb1_data:/bitnami/mongodb'
+      - 'polls_mongodb1_config:/bitnami/mongodbconfig'
+
+  mongo-express:
+    image: mongo-express
+    environment:
+      ME_CONFIG_BASICAUTH_USERNAME: mongo_username
+      ME_CONFIG_BASICAUTH_PASSWORD: MongoExpress2024!
+      ME_CONFIG_MONGODB_PORT: 27017
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: MongoDB2024!
+    links:
+      - mongo1
+    networks:
+      - mongo-compose-network
+    ports:
+      - 8081:8081
+    restart: always
+
+  redis:
+    image: bitnami/redis:latest
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+    ports:
+      - '6379:6379'
+    volumes:
+      - 'polls_redis_data:/bitnami/redis/data'
+
+networks:
+  mongo-compose-network:
+    driver: bridge
+  mongo-net:
+    driver: bridge
+
+volumes:
+  polls_mongodb1_data:
+  polls_mongodb1_config:
+  polls_redis_data:

@@ -1,0 +1,24 @@
+{
+  "name": "nlw14-poll-api-node",
+  "version": "1.0.0",
+  "description": "",
+  "main": "",
+  "scripts": {
+    "dev": "tsx watch src/server.ts"
+  },
+  "dependencies": {
+    "@fastify/cookie": "^9.3.1",
+    "@fastify/websocket": "^10.0.1",
+    "@prisma/client": "5.12.0",
+    "fastify": "^4.26.2",
+    "ioredis": "^5.3.2",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@types/node": "^20.12.3",
+    "prisma": "^5.12.0",
+    "tsx": "^4.7.1",
+    "typescript": "^5.4.3"
+  },
+  "packageManager": "yarn@3.2.3"
+}
